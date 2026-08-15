@@ -1,0 +1,1 @@
+A virtual pet game built with Python and Pygame.
