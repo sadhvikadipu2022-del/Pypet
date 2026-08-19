@@ -1,0 +1,18 @@
+{
+    "pet_name": "PyPet",
+    "coins": 40,
+    "inventory": [
+        "Fish Snack",
+        "Fish Snack",
+        "Hat",
+        "Fancy Bed"
+    ],
+    "stats": {
+        "Hunger": 100,
+        "Happiness": 99,
+        "Energy": 72,
+        "food_eaten": 0,
+        "times_slept": 0,
+        "minigames_won": 0
+    }
+}
