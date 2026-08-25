@@ -7,6 +7,21 @@ pygame.display.set_caption("PyPet")
 import json
 import os
 
+is_night = False
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+
+def draw_pet():
+    if is_night:
+        pygame.draw.circle(screen, (100, 100, 255), (840, 90), 35)
+    else:
+        pygame.draw.circle(screen, (255, 200, 0), (840, 90), 35)
+
+def draw_stats():
+    font = pygame.font.SysFont(None, 30)
+    health_text = font.render("Health: 100", True, BLACK if not is_night else WHITE)
+    screen.blit(health_text, (15, 165))
+
 DEFAULT_GAME_DATA = {
     "pet_name": "PyPet",
     "coins": 100,
@@ -89,6 +104,11 @@ show_shop = False
 shop_button_rect = pygame.Rect(790, 15, 90, 45)
 running = True
 while running:
+    if is_night:
+        screen.fill((10, 10, 50))
+    else:
+        screen.fill((255, 255, 255))
+
     current_time = pygame.time.get_ticks()
     if game_data["stats"]["Hunger"] >= 80:
         pet_message = "I'm starving!"
@@ -101,7 +121,9 @@ while running:
             save_game(game_data)
             running = False
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_f:
+            if event.key == pygame.K_n:  # Press N to toggle day/night
+                is_night = not is_night
+            elif event.key == pygame.K_f:
                 if is_sleeping:
                     pet_message = "The pet shouldn't eat while sleeping!"
                 else:
@@ -111,25 +133,24 @@ while running:
                     pet_message = "Yummy!"
                     pet_state = "eating"
                     target_x = bowl_x - 75
-            if event.key == pygame.K_p:
+            elif event.key == pygame.K_p:
                 if is_sleeping:
                     pet_message = "The pet shouldn't play while sleeping!"
                 elif game_data["stats"]["Energy"] < 20:
                     pet_message = "I'm too tired!"
                 else:
                     game_data["stats"]["Happiness"] = min(100, game_data["stats"]["Happiness"] + 15)
-                    game_data["stats"]["Energy"] = max(0, game_data["stats"]["Energy"] - 20)
                     game_data["stats"]["Hunger"] = min(100, game_data["stats"]["Hunger"] + 10)
                     pet_message = "Yay! Let's play!"
                     pet_state = "playing"
                     target_x = ball_x - 90
-            if event.key == pygame.K_s:
+            elif event.key == pygame.K_s:
                 is_sleeping = True
                 game_data["stats"]["Energy"] = 100
                 pet_message = "Zzz... Sleeping..."
                 pet_state = "sleeping"
                 target_x = bed_x - 50
-            if event.key == pygame.K_w:
+            elif event.key == pygame.K_w:
                 is_sleeping = False
                 pet_state = "idle"
                 pet_message = "Good morning!"
@@ -249,9 +270,6 @@ while running:
     screen.blit(current_pet_image, (pet_x, pet_y))
     screen.blit(name_surface, (text_x, text_y))
     screen.blit(msg_surface, (msg_x, msg_y))
-    stats_string = f"Hunger: {game_data['stats']['Hunger']} | Happiness: {game_data['stats']['Happiness']} | Energy: {game_data['stats']['Energy']}"
-    stats_surface = stats_font.render(stats_string, True, (255, 255, 255))
-    screen.blit(stats_surface, (15, 15))
     stats_string = f"Hunger: {game_data['stats']['Hunger']} | Happiness: {game_data['stats']['Happiness']} | Energy: {game_data['stats']['Energy']} | Coins: {game_data['coins']}"
     stats_surface = stats_font.render(stats_string, True, (255, 255, 255))
     screen.blit(stats_surface, (15, 15))
@@ -293,5 +311,7 @@ while running:
         for line_index, line in enumerate(shop_lines):
             line_surface = stats_font.render(line, True, (70, 70, 70))
             screen.blit(line_surface, (580, 145 + line_index * 35))
+    draw_pet()  
+    draw_stats() 
     pygame.display.flip()
 pygame.quit()
